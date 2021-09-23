@@ -1,10 +1,57 @@
+//Punto 2b
+//var pirataIncorporado = new Pirata(monedas = 10, items = ["cuchillo"] )
+//var  mision = new BusquedaDelTesoro()
+//var barcoPrueba = new Barco(mision =)
+//barcoPrueba.incorporar(pirataIncorporado)
 class Barco {
 
+	var property hayLugar = true
 	var property tripulantes = []
 	var property mision
 
+	method tieneItem(item) = tripulantes.any{ tripulante => tripulante.tieneItem(item) }
+
 	method tripulacionPasadaDeGrog() {
 		self.tripulantes().all({ tripulante => tripulante.estarPasadoDeGrog()})
+	}
+
+	method incorpar(unTripulante) {
+		if (not self.puedeFormarParteDeUnaTripulacion(unTripulante)) self.error("No se puede subir al barco")
+		tripulantes.add(unTripulante)
+	}
+
+	method puedeFormarParteDeUnaTripulacion(unTripulante) {
+		return self.hayLugar() && mision.esUtil(unTripulante)
+	}
+
+	method cambiarDeMision() {
+		const tripulantesInutiles = tripulantes.filter{ tripulante => not mision.esUtil(tripulante) }
+		tripulantesInutiles.forEach{ tripulante => self.expulsar(tripulante)}
+	}
+
+	method expulsar(unTripulante) {
+		tripulantes.remove(unTripulante)
+	}
+
+	method tripulantesUtiles() = tripulantes.filter{ tripulante => mision.esUtil(tripulante) }
+
+	method puedeRealizarSuMision() = mision.puedeSerRealizadoPor(self)
+
+	method esTembible() = self.tripulantesUtiles().size() >= 5 && self.puedeRealizarSuMision()
+
+	method itemsDelBarco() {
+		const itemsTotales = []
+		tripulantes.forEach{ tripulante => tripulante.items().addAll(itemsTotales)}
+		return itemsTotales
+	}
+
+	method tripulantesQueTienen(unItem) {
+		const tripulantesQueLoTienen = tripulantes.filter{ tripulante => tripulante.tieneItem(unItem) }
+		return tripulantesQueLoTienen.size()
+	}
+
+	method itemMasRaro() {
+		tripulantes.forEach{ tripulante , otroTripulante => tripulante.cantidadItems() < otroTripulante.cantidadItems()}
 	}
 
 }
@@ -12,8 +59,12 @@ class Barco {
 class Pirata {
 
 	var property items = []
-	var property monedas
+	var property monedas = 0
 	var property nivelEbriedad = 0
+
+	method cantidadItems() {
+		return items.size()
+	}
 
 	method tieneItem(unItem) {
 		self.items().contains(unItem)
@@ -40,13 +91,17 @@ object barbaNegra inherits Pirata(items = [ "traje" ], monedas = 5) {
 
 class BusquedaDelTesoro {
 
+	var property itemNecesario = "Llave de cofre"
+
 	method esUtil(unPirata) {
 		return self.tieneAlgunItemUtil(unPirata) && unPirata.monedas() <= 5
 	}
 
 	method tieneAlgunItemUtil(unPirata) = #{ "brujula", "botellaGrog", "cuchillo", "mapa" }.any({ item => unPirata.tieneItem(item) })
 
-	method puedeSerRealizadoPor(unBarco) = unBarco.tripulantes().any{ (unTripulante => unTripulante.tieneItem("Llave de cofre")) }
+	method puedeSerRealizadoPor(unBarco) {
+		return unBarco.tieneItem(itemNecesario)
+	}
 
 }
 
@@ -59,7 +114,7 @@ class ConvertirseEnLeyenda {
 	}
 
 	method tieneItemsCantidadNecesaria(unPirata) {
-		return unPirata.items().size() >= 10
+		return unPirata.cantidadItems() >= 10
 	}
 
 	method puedeSerRealizadoPor(unBarco) {
@@ -107,6 +162,9 @@ class BarcoPirata inherits Barco {
 		const tripulantesDelAtacante = unBarco.tripulantes()
 		const tripulantesDelBarcoPirata = self.tripulantes()
 		return (tripulantesDelAtacante / 2) >= tripulantesDelBarcoPirata
+	}
+
+	method esTembible() {
 	}
 
 }
