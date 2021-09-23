@@ -6,7 +6,7 @@
 class Barco {
 
 	var property hayLugar = true
-	var property tripulantes = []
+	var property tripulantes = #{}
 	var property mision
 
 	method tieneItem(item) = tripulantes.any{ tripulante => tripulante.tieneItem(item) }
@@ -51,7 +51,31 @@ class Barco {
 	}
 
 	method itemMasRaro() {
-		tripulantes.forEach{ tripulante , otroTripulante => tripulante.cantidadItems() < otroTripulante.cantidadItems()}
+		return self.itemsDelBarco().min{ item => self.tripulantesQueTienen(item) }
+	}
+
+	method anclar(unaCiudadCostera) {
+		self.pagarGrogXD()
+		if (not self.todosPuedenPagar(unaCiudadCostera.precioDeEstadia())) {
+			self.error("No alcanza la guita")
+		}
+		const quedaPerdido = self.tripulanteMasEbrio()
+		tripulantes.remove(quedaPerdido)
+		unaCiudadCostera.add(quedaPerdido)
+	}
+
+	method todosPuedenPagar(unDinero) {
+		return tripulantes.all{ tripulante => tripulante.puedePagarMonedas(unDinero) }
+	}
+
+	method pagarGrogXD() {
+		const puedenPagar = tripulantes.filter{ tripulante => tripulante.puedePagar("botellaGrog") }
+		puedenPagar.forEach{ tripulante => tripulante.pagar("botellaGrog")}
+		puedenPagar.forEach{ tripulante => tripulante.nivelEbriedad(tripulante.nivelEbriedad() + 5)} // Consecuencia de pagar Grog
+	}
+
+	method tripulanteMasEbrio() {
+		return tripulantes.min{ tripulante => tripulante.nivelEbriedad() }
 	}
 
 }
@@ -74,14 +98,46 @@ class Pirata {
 		return self.nivelEbriedad() >= 90
 	}
 
+	method pagar(unItem) {
+		if (not self.puedePagar(unItem)) {
+			self.error("No puede pagarlo")
+		}
+		monedas -= unItem.precio()
+		items.add(unItem)
+	}
+
+	method puedePagar(unItem) {
+		return monedas >= unItem.precio()
+	}
+
+	method puedePagarMonedas(unDinero) {
+		return monedas >= unDinero
+	}
+
+	method seAnimaASaquear(victima) {
+		victima.puedeSerSaqueadoPor(self)
+	}
+
+}
+
+class Espia inherits Pirata {
+
 }
 
 class Item {
+
+	var property precio
 
 }
 
 //Misiones
 class Mision {
+
+	var property itemNecesario
+
+	method puedeSerRealizadoPor(unBarco)
+
+	method esUtil(unPirata)
 
 }
 
@@ -89,53 +145,42 @@ object barbaNegra inherits Pirata(items = [ "traje" ], monedas = 5) {
 
 }
 
-class BusquedaDelTesoro {
+class BusquedaDelTesoro inherits Mision(itemNecesario = "Llave de cofre") {
 
-	var property itemNecesario = "Llave de cofre"
-
-	method esUtil(unPirata) {
+	override method esUtil(unPirata) {
 		return self.tieneAlgunItemUtil(unPirata) && unPirata.monedas() <= 5
 	}
 
 	method tieneAlgunItemUtil(unPirata) = #{ "brujula", "botellaGrog", "cuchillo", "mapa" }.any({ item => unPirata.tieneItem(item) })
 
-	method puedeSerRealizadoPor(unBarco) {
+	override method puedeSerRealizadoPor(unBarco) {
 		return unBarco.tieneItem(itemNecesario)
 	}
 
 }
 
-class ConvertirseEnLeyenda {
+class ConvertirseEnLeyenda inherits Mision {
 
-	var property itemObligatorio
-
-	method esUtil(unPirata) {
-		return self.tieneItemsCantidadNecesaria(unPirata) && unPirata.tieneItem(itemObligatorio)
+	override method esUtil(unPirata) {
+		return self.tieneItemsCantidadNecesaria(unPirata) && unPirata.tieneItem(itemNecesario)
 	}
 
 	method tieneItemsCantidadNecesaria(unPirata) {
 		return unPirata.cantidadItems() >= 10
 	}
 
-	method puedeSerRealizadoPor(unBarco) {
-	}
-
 }
 
-class Saqueo {
+class Saqueo inherits Mision {
 
 	var property victima
 	var property cantidadMinimaMonedasParaMision = 5
 
-	method esUtil(unPirata) {
-		return unPirata.monedas() < cantidadMinimaMonedasParaMision && self.seAnimaASaquear(unPirata)
+	override method esUtil(unPirata) {
+		return unPirata.monedas() < cantidadMinimaMonedasParaMision && unPirata.seAnimaASaquear(victima)
 	}
 
-	method seAnimaASaquear(unPirata) {
-		return 0
-	}
-
-	method puedeSerRealizadoPor(unBarco) {
+	override method puedeSerRealizadoPor(unBarco) {
 		return victima.esVulnerableA(unBarco)
 	}
 
@@ -143,9 +188,10 @@ class Saqueo {
 
 class CiudadCostera {
 
+	var property precioDeEstadia
 	var property habitantes
 
-	method puedeSerSaqueado(unPirata) = unPirata.nivelEbriedad() > 50
+	method puedeSerSaqueadoPor(unPirata) = unPirata.nivelEbriedad() > 50
 
 	method esVulnerableA(unBarco) {
 		const cuarentaPorCientoDeHabitantes = self.habitantes() * 0.4
@@ -156,15 +202,12 @@ class CiudadCostera {
 
 class BarcoPirata inherits Barco {
 
-	method puedeSerSaqueado(unPirata) = unPirata.estarPasadoDeGrog() && unPirata.tieneItem("botellaGrog")
+	method puedeSerSaqueadoPor(unPirata) = unPirata.estarPasadoDeGrog() && unPirata.tieneItem("botellaGrog")
 
 	method esVulnerableA(unBarco) {
 		const tripulantesDelAtacante = unBarco.tripulantes()
 		const tripulantesDelBarcoPirata = self.tripulantes()
 		return (tripulantesDelAtacante / 2) >= tripulantesDelBarcoPirata
-	}
-
-	method esTembible() {
 	}
 
 }
