@@ -80,22 +80,14 @@ class Barco {
 	}
 
 	method tripulanteMasEbrio() {
-		return tripulantes.min{ tripulante => tripulante.nivelEbriedad() }
+		return tripulantes.max{ tripulante => tripulante.nivelEbriedad() }
 	}
 
 }
-
-
-
 
 class Item {
 
 	var property precio
 
 }
-
-
-
-
-
 
