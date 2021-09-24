@@ -24,9 +24,11 @@ class Barco {
 		return self.hayLugar() && mision.esUtil(unTripulante)
 	}
 
-	method cambiarDeMision() {
-		const tripulantesInutiles = tripulantes.filter{ tripulante => not mision.esUtil(tripulante) }
+	method mision(nuevaMision) {
+		mision = nuevaMision
+		const tripulantesInutiles = tripulantes.filter{ tripulante => not nuevaMision.esUtil(tripulante) }
 		tripulantesInutiles.forEach{ tripulante => self.expulsar(tripulante)}
+	// tripulantes.removeAll(piratasQueNoSirven) Alternativa
 	}
 
 	method expulsar(unTripulante) {
@@ -174,7 +176,7 @@ class ConvertirseEnLeyenda inherits Mision {
 class Saqueo inherits Mision {
 
 	var property victima
-	var property cantidadMinimaMonedasParaMision = 5
+	const cantidadMinimaMonedasParaMision = configuracionSaqueos.maximoMonedas()
 
 	override method esUtil(unPirata) {
 		return unPirata.monedas() < cantidadMinimaMonedasParaMision && unPirata.seAnimaASaquear(victima)
@@ -209,6 +211,12 @@ class BarcoPirata inherits Barco {
 		const tripulantesDelBarcoPirata = self.tripulantes()
 		return (tripulantesDelAtacante / 2) >= tripulantesDelBarcoPirata
 	}
+
+}
+
+object configuracionSaqueos {
+
+	var property maximoMonedas = 0
 
 }
 
