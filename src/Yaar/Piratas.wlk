@@ -8,9 +8,7 @@ class Pirata {
 		return items.size()
 	}
 
-	method tieneItem(unItem) {
-		self.items().contains(unItem)
-	}
+	method tieneItem(unItem) = self.items().contains(unItem)
 
 	method estarPasadoDeGrog() {
 		return self.nivelEbriedad() >= 90
@@ -32,14 +30,19 @@ class Pirata {
 		return monedas >= unDinero
 	}
 
-	method seAnimaASaquear(victima) {
-		victima.puedeSerSaqueadoPor(self)
-	}
+	method seAnimaASaquear(victima) = victima.puedeSerSaqueadoPor(self)
 
 }
+
 class Espia inherits Pirata {
 
+	override method estarPasadoDeGrog() = false
+
+	override method seAnimaASaquear(victima) = super(victima) && self.tieneItem("Permiso de la corona")
+
 }
 
+object barbaNegra inherits Pirata(items = [ "traje" ], monedas = 5) {
 
-object barbaNegra inherits Pirata(items = [ "traje" ], monedas = 5) {}
+}
+
