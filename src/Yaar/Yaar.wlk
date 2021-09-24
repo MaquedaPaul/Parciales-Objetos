@@ -1,3 +1,6 @@
+import Misiones.*
+import Piratas.*
+
 //Punto 2b
 //var pirataIncorporado = new Pirata(monedas = 10, items = ["cuchillo"] )
 //var  mision = new BusquedaDelTesoro()
@@ -82,49 +85,8 @@ class Barco {
 
 }
 
-class Pirata {
 
-	var property items = []
-	var property monedas = 0
-	var property nivelEbriedad = 0
 
-	method cantidadItems() {
-		return items.size()
-	}
-
-	method tieneItem(unItem) {
-		self.items().contains(unItem)
-	}
-
-	method estarPasadoDeGrog() {
-		return self.nivelEbriedad() >= 90
-	}
-
-	method pagar(unItem) {
-		if (not self.puedePagar(unItem)) {
-			self.error("No puede pagarlo")
-		}
-		monedas -= unItem.precio()
-		items.add(unItem)
-	}
-
-	method puedePagar(unItem) {
-		return monedas >= unItem.precio()
-	}
-
-	method puedePagarMonedas(unDinero) {
-		return monedas >= unDinero
-	}
-
-	method seAnimaASaquear(victima) {
-		victima.puedeSerSaqueadoPor(self)
-	}
-
-}
-
-class Espia inherits Pirata {
-
-}
 
 class Item {
 
@@ -132,91 +94,8 @@ class Item {
 
 }
 
-//Misiones
-class Mision {
 
-	var property itemNecesario
 
-	method puedeSerRealizadoPor(unBarco)
 
-	method esUtil(unPirata)
 
-}
-
-object barbaNegra inherits Pirata(items = [ "traje" ], monedas = 5) {
-
-}
-
-class BusquedaDelTesoro inherits Mision(itemNecesario = "Llave de cofre") {
-
-	override method esUtil(unPirata) {
-		return self.tieneAlgunItemUtil(unPirata) && unPirata.monedas() <= 5
-	}
-
-	method tieneAlgunItemUtil(unPirata) = #{ "brujula", "botellaGrog", "cuchillo", "mapa" }.any({ item => unPirata.tieneItem(item) })
-
-	override method puedeSerRealizadoPor(unBarco) {
-		return unBarco.tieneItem(itemNecesario)
-	}
-
-}
-
-class ConvertirseEnLeyenda inherits Mision {
-
-	override method esUtil(unPirata) {
-		return self.tieneItemsCantidadNecesaria(unPirata) && unPirata.tieneItem(itemNecesario)
-	}
-
-	method tieneItemsCantidadNecesaria(unPirata) {
-		return unPirata.cantidadItems() >= 10
-	}
-
-}
-
-class Saqueo inherits Mision {
-
-	var property victima
-	const cantidadMinimaMonedasParaMision = configuracionSaqueos.maximoMonedas()
-
-	override method esUtil(unPirata) {
-		return unPirata.monedas() < cantidadMinimaMonedasParaMision && unPirata.seAnimaASaquear(victima)
-	}
-
-	override method puedeSerRealizadoPor(unBarco) {
-		return victima.esVulnerableA(unBarco)
-	}
-
-}
-
-class CiudadCostera {
-
-	var property precioDeEstadia
-	var property habitantes
-
-	method puedeSerSaqueadoPor(unPirata) = unPirata.nivelEbriedad() > 50
-
-	method esVulnerableA(unBarco) {
-		const cuarentaPorCientoDeHabitantes = self.habitantes() * 0.4
-		return unBarco.tripulantes() >= cuarentaPorCientoDeHabitantes || unBarco.tripulacionPasadaDeGrog()
-	}
-
-}
-
-class BarcoPirata inherits Barco {
-
-	method puedeSerSaqueadoPor(unPirata) = unPirata.estarPasadoDeGrog() && unPirata.tieneItem("botellaGrog")
-
-	method esVulnerableA(unBarco) {
-		const tripulantesDelAtacante = unBarco.tripulantes()
-		const tripulantesDelBarcoPirata = self.tripulantes()
-		return (tripulantesDelAtacante / 2) >= tripulantesDelBarcoPirata
-	}
-
-}
-
-object configuracionSaqueos {
-
-	var property maximoMonedas = 0
-
-}
 
