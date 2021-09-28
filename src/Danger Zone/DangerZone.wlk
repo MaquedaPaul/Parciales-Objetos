@@ -2,7 +2,7 @@ class Empleado {
 
 	var property habilidades = #{}
 	var property salud
-	var puesto
+	var property puesto
 
 	method quedaIncapacitado() {
 		return salud < puesto.saludCritica()
@@ -17,8 +17,7 @@ class Empleado {
 	}
 
 	method cumplirMision(unaMision) {
-		unaMision.cumpleRequerimientos(self)
-		self.recibirDanio(unaMision.peligrosidad())
+		unaMision.serCumplidaPor(self)
 		if (self.estaVivo()) {
 			self.registrar(unaMision)
 		}
@@ -40,13 +39,6 @@ class Empleado {
 		habilidades.add(unaHabilidad)
 	}
 
-	method cambiarDePuesto(nuevoPuesto) {
-		if (not nuevoPuesto.cumpleRequerimientosParaLaburar()) {
-			self.error("No cumple los requerimientos necesarios")
-		}
-		puesto = nuevoPuesto
-	}
-
 }
 
 object puestoEspia {
@@ -58,8 +50,7 @@ object puestoEspia {
 	}
 
 	method registrar(unaMision, empleado) {
-		const habilidadesRequeridasParaMision = unaMision.habilidadesRequeridas()
-		habilidadesRequeridasParaMision.forEach{ habilidad => empleado.aprenderHabilidad(habilidad)}
+		unaMision.aprenderHabilidades(empleado)
 	}
 
 }
@@ -74,6 +65,9 @@ class PuestoOficinista {
 
 	method registrar(unaMision, empleado) {
 		estrellas += 1
+		if (self.puedeTrabajarComoEspia()) {
+			empleado.puesto(puestoEspia)
+		}
 	}
 
 	method puedeTrabajarComoEspia() {
@@ -132,5 +126,21 @@ class Mision {
 		return habilidadesDeUnEmpleado.all{ habilidad => habilidadesRequeridas.contains(habilidad) }
 	}
 
+	method serCumplidaPor(unEmpleado) {
+		if (not self.cumpleRequerimientos(unEmpleado)) {
+			self.error("La mision no puede ser cumplida")
+		}
+		unEmpleado.recibirDanio(peligrosidad)
+	}
+
+	method aprenderHabilidades(unEmpleado) {
+		habilidadesRequeridas.forEach{ habilidad => unEmpleado.aprenderHabilidad(habilidad)}
+	}
+
 }
 
+/*Agregado relevante, que sino termina siendo duplicado para los Jefes
+ * 
+ * 
+ * 
+ */
