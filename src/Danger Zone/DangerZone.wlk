@@ -1,39 +1,53 @@
 class Empleado {
 
-	var property habilidades
+	var property habilidades = #{}
 	var property salud
+	var puesto
 
 	method quedaIncapacitado() {
-		return salud < self.saludCritica()
+		return salud < puesto.saludCritica()
 	}
 
-	method saludCritica()
-
 	method puedeUsar(unaHabilidad) {
-		return (not self.quedaIncapacitado() && ...)
+		return (not self.quedaIncapacitado() && self.poseeHabilidad(unaHabilidad))
 	}
 
 	method poseeHabilidad(unaHabilidad) {
+		return habilidades.contains(unaHabilidad)
 	}
 
 }
 
-class Espia inherits Empleado {
+object puestoEspia {
 
 	const saludCritica = 15
 
-	override method saludCritica() {
+	method saludCritica() {
 		return saludCritica
 	}
 
 }
 
-class Oficinista inherits Empleado {
+class PuestoOficinista {
 
 	var property estrellas
 
-	override method saludCritica() {
+	method saludCritica() {
 		return 40 - 5 * estrellas
+	}
+
+}
+
+class Jefe inherits Empleado {
+
+	const empleados = #{}
+
+	override method poseeHabilidad(unaHabilidad) {
+		return super(unaHabilidad) or self.algunEmpleadoPuedeUsar(unaHabilidad)
+	}
+
+	method algunEmpleadoPuedeUsar(unaHabilidad) {
+		return empleados.any{ empleado => empleado.puedeUsar(unaHabilidad) }
 	}
 
 }
