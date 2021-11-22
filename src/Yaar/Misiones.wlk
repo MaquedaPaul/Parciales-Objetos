@@ -1,4 +1,3 @@
-
 //Misiones
 class Mision {
 
@@ -65,21 +64,22 @@ class CiudadCostera {
 
 }
 
-class BarcoPirata inherits Barco {
+/*
+ * class BarcoPirata inherits Barco {
 
-	method puedeSerSaqueadoPor(unPirata) = unPirata.estarPasadoDeGrog() && unPirata.tieneItem("botellaGrog")
+ * 	method puedeSerSaqueadoPor(unPirata) = unPirata.estarPasadoDeGrog() && unPirata.tieneItem("botellaGrog")
 
-	method esVulnerableA(unBarco) {
-		const tripulantesDelAtacante = unBarco.tripulantes()
-		const tripulantesDelBarcoPirata = self.tripulantes()
-		return (tripulantesDelAtacante / 2) >= tripulantesDelBarcoPirata
-	}
+ * 	method esVulnerableA(unBarco) {
+ * 		const tripulantesDelAtacante = unBarco.tripulantes()
+ * 		const tripulantesDelBarcoPirata = self.tripulantes()
+ * 		return (tripulantesDelAtacante / 2) >= tripulantesDelBarcoPirata
+ * 	}
 
-}
-
-
+ * }
+ */
 object configuracionSaqueos {
 
 	var property maximoMonedas = 0
 
 }
+

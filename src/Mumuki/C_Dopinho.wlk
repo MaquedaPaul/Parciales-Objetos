@@ -1,40 +1,41 @@
-object georginho{
-var property peso = 70
-const inerciaBase = 490
-var property sustancia
-var property rendimiento
+object georginho {
 
-method consumir(cantidad, unaSustancia) {
-  rendimiento = unaSustancia.consumirse(cantidad)
-}
+	var property peso = 70
+	const inerciaBase = 490
+// var property sustancia
+	var property rendimiento
 
-method velocidad() {
-  return (rendimiento * inerciaBase) / peso
-}
+	method consumir(cantidad, unaSustancia) {
+		rendimiento = unaSustancia.consumirse(cantidad)
+	}
 
-}
-
-
-object whisky{
-
-method consumirse(cantidad) {
-  return 0.9 ** cantidad
-}
+	method velocidad() {
+		return (rendimiento * inerciaBase) / peso
+	}
 
 }
 
-object terere{
+object whisky {
 
-method consumirse(cantidad) {
-  return 1.max(cantidad * 0.1 )
-}
-
-}
-
-object cianuro{
-
-method consumirse(cantidad) {
-  return 0
-}
+	method consumirse(cantidad) {
+		return 0.9 ** cantidad
+	}
 
 }
+
+object terere {
+
+	method consumirse(cantidad) {
+		return 1.max(cantidad * 0.1)
+	}
+
+}
+
+object cianuro {
+
+	method consumirse(cantidad) {
+		return 0
+	}
+
+}
+

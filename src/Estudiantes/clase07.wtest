@@ -1,4 +1,5 @@
-import clase07.cursadas.*
+/*
+ * import clase07.cursadas.*
 import clase07.estudiantes.*
 
 test "prueba general" {
@@ -20,3 +21,4 @@ test "prueba general" {
 	assert.that(caro.completo(tarea2))
 	assert.notThat(leo.completo(tarea2))
 }
+*/
