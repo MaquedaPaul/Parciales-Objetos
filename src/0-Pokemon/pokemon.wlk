@@ -182,6 +182,7 @@ class Confusion inherits Condicion {
 		if (cantidadTurnos == 0) {
 			return new Normal()
 		} else {
+			cantidadTurnos = -1
 			return self
 		}
 	}
